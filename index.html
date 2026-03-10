@@ -645,7 +645,14 @@
                 <div class="fw-bold">2026.03.01 – 07.05</div>
               </div>
             </div>
-           
+            <div class="col-12">
+              <div class="kpi fade-in-delay-3">
+                <div class="mini">Оролцох нөхцөл</div>
+                <div class="fw-bold">Баримтаа бүртгүүлээд сугалаанд оролцоорой</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -805,43 +812,6 @@
 
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    function animateNumber(el, endValue) {
-      const finalValue = Number(endValue) || 0;
-      const isInteger = Number.isInteger(finalValue);
-      const duration = 900;
-      const startValue = 0;
-      const startTime = performance.now();
-
-      function update(now) {
-        const progress = Math.min((now - startTime) / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        const current = startValue + (finalValue - startValue) * eased;
-        el.textContent = isInteger ? Math.round(current) : current.toFixed(1);
-        if (progress < 1) requestAnimationFrame(update);
-      }
-
-      requestAnimationFrame(update);
-    }
-
-    async function loadDashboard() {
-      try {
-        const response = await fetch(scriptURL + "?action=dashboard");
-        const data = await response.json();
-
-        animateNumber(document.getElementById("totalApplicants"), data.totalApplicants ?? 0);
-        animateNumber(document.getElementById("todayApplicants"), data.todayApplicants ?? 0);
-        animateNumber(document.getElementById("totalImages"), data.totalImages ?? 0);
-        animateNumber(document.getElementById("avgAge"), Number(data.avgAge ?? 0));
-      } catch (error) {
-        document.getElementById("totalApplicants").textContent = 0;
-        document.getElementById("todayApplicants").textContent = 0;
-        document.getElementById("totalImages").textContent = 0;
-        document.getElementById("avgAge").textContent = 0;
-      }
-    }
-
-    loadDashboard();
-
     fileInput.addEventListener("change", function () {
       fileText.textContent = this.files.length > 0 ? this.files[0].name : "Баримтын зураг сонгох";
     });
@@ -992,7 +962,6 @@
           receiptForm.reset();
           fileText.textContent = "Баримтын зураг сонгох";
           launchConfetti();
-          loadDashboard();
         } else {
           showMessage("danger", `Алдаа: ${data.message || "Тодорхойгүй алдаа"}`);
         }
@@ -1006,5 +975,7 @@
     });
   </script>
 </body>
-
 </html>
+
+
+
