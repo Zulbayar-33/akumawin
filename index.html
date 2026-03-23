@@ -586,6 +586,12 @@
               <input type="number" id="age" class="form-control" placeholder="Нас..." min="1" max="120" required>
             </div>
 
+            <div class="mb-3">
+              <label class="form-label" for="amount">Худалдан авалтын дүн <span class="required">*</span></label>
+              <input type="number" id="amount" class="form-control" placeholder="Жишээ: 200000" min="200000" step="1000" required>
+              <div class="small text-muted mt-2">Зөвхөн 200,000₮-өөс дээш дүнтэй баримт хүлээн авна.</div>
+            </div>
+
             <div class="mb-4">
               <label class="form-label">Баримтын зураг оруулах <span class="required">*</span></label>
               <label class="upload-box">
@@ -655,6 +661,7 @@
       const phone = document.getElementById("phone").value.trim();
       const receipt = document.getElementById("receipt").value.trim();
       const age = document.getElementById("age").value.trim();
+      const amount = document.getElementById("amount").value.trim();
       const imageFile = fileInput.files[0];
 
       if (website) return showMessage("danger", "Spam илэрлээ.");
@@ -663,6 +670,7 @@
       if (!/^\d{8}$/.test(phone)) return showMessage("danger", "Утасны дугаар 8 оронтой байх ёстой.");
       if (!receipt) return showMessage("danger", "Е-баримтын дугаараа оруулна уу.");
       if (!age || Number(age) < 1 || Number(age) > 120) return showMessage("danger", "Насаа зөв оруулна уу.");
+      if (!amount || Number(amount) < 200000) return showMessage("danger", "Зөвхөн 200,000₮-өөс дээш худалдан авалтын баримт хүлээн авна.");
       if (!imageFile) return showMessage("danger", "Баримтын зураг сонгоно уу.");
 
       const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
@@ -685,6 +693,7 @@
           phone,
           receipt,
           age,
+          amount: Number(amount),
           imageBase64,
           imageName: imageFile.name,
           mimeType: imageFile.type,
