@@ -355,7 +355,7 @@
     <div class="single-col">
       <aside class="form-shell" id="registerSection">
         <div class="form-title">Баримт бүртгүүлэх</div>
-        <div class="form-sub">Нэр, утас, е-баримтын дугаар, нас, худалдан авалтын дүн, баримтын зургаа оруулна уу.</div>
+        <div class="form-sub">Нэр, утас, худалдан авалтын дүн, баримтын зургаа оруулна уу.</div>
 
         <form id="receiptForm" novalidate>
           <input type="text" id="website" name="website" class="honeypot" autocomplete="off" tabindex="-1">
@@ -368,16 +368,6 @@
           <div class="mb-3">
             <label class="form-label" for="phone">Утасны дугаар <span class="required">*</span></label>
             <input type="tel" id="phone" class="form-control" placeholder="Жишээ: 99112233 эсвэл +97699112233" maxlength="15" inputmode="tel" required>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label" for="receipt">Е-баримтын дугаар <span class="required">*</span></label>
-            <input type="text" id="receipt" class="form-control" placeholder="Е-баримтын бүртгэлийн дугаар..." required>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label" for="age">Нас <span class="required">*</span></label>
-            <input type="number" id="age" class="form-control" placeholder="Жишээ: 25" min="1" max="120" required>
           </div>
 
           <div class="mb-3">
@@ -472,8 +462,6 @@
         phone = phone.slice(-8);
       }
 
-      const receipt = document.getElementById("receipt").value.trim();
-      const age = document.getElementById("age").value.trim();
       const amount = document.getElementById("amount").value.trim();
       const imageFile = fileInput.files[0];
 
@@ -481,8 +469,6 @@
       if (Date.now() - formLoadedAt < 3000) return showMessage("danger", "3 секунд хүлээгээд дахин оролдоно уу.");
       if (!name) return showMessage("danger", "Нэрээ оруулна уу.");
       if (!/^\d{8}$/.test(phone)) return showMessage("danger", "Утас буруу: " + rawPhone + " → " + phone);
-      if (!receipt) return showMessage("danger", "Е-баримтын дугаараа оруулна уу.");
-      if (!age || Number(age) < 1 || Number(age) > 120) return showMessage("danger", "Насаа зөв оруулна уу.");
       if (!amount || Number(amount) < 200000) return showMessage("danger", "Зөвхөн 200,000₮-өөс дээш худалдан авалтын баримт хүлээн авна.");
       if (!imageFile) return showMessage("danger", "Баримтын зураг сонгоно уу.");
 
@@ -505,8 +491,6 @@
           campaignBrand: "AKUMA",
           name,
           phone,
-          receipt,
-          age: Number(age),
           amount: Number(amount),
           imageBase64,
           imageName: imageFile.name,
@@ -552,4 +536,3 @@
   </script>
 </body>
 </html>
-
