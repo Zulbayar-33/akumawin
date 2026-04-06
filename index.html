@@ -586,12 +586,13 @@
     `;
   }
 
-  // ✅ COOL DOWN CHECK FUNCTION
+  // ✅ BUTTON COOLDOWN
   function checkCooldown() {
     const lastSubmitTime = localStorage.getItem("lastSubmitTime");
     if (!lastSubmitTime) return;
 
     const waitTime = 15 * 60 * 1000;
+
     const interval = setInterval(() => {
       const now = Date.now();
       const diff = now - Number(lastSubmitTime);
@@ -602,8 +603,37 @@
         clearInterval(interval);
       } else {
         submitBtn.disabled = true;
-        const remaining = Math.ceil((waitTime - diff) / 60000);
-        submitBtn.textContent = `Хүлээнэ үү (${remaining} мин)`;
+
+        const remainingMs = waitTime - diff;
+        const minutes = Math.floor(remainingMs / 60000);
+        const seconds = Math.floor((remainingMs % 60000) / 1000);
+
+        submitBtn.textContent = `Хүлээнэ үү (${minutes}:${seconds.toString().padStart(2,'0')})`;
+      }
+    }, 1000);
+  }
+
+  // ✅ POPUP COUNTDOWN
+  function startPopupCountdown() {
+    const el = document.getElementById("cooldownText");
+    const lastSubmitTime = localStorage.getItem("lastSubmitTime");
+    if (!lastSubmitTime || !el) return;
+
+    const waitTime = 15 * 60 * 1000;
+
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const diff = now - Number(lastSubmitTime);
+
+      if (diff >= waitTime) {
+        el.textContent = "Одоо боломжтой";
+        clearInterval(interval);
+      } else {
+        const remainingMs = waitTime - diff;
+        const minutes = Math.floor(remainingMs / 60000);
+        const seconds = Math.floor((remainingMs % 60000) / 1000);
+
+        el.textContent = `${minutes} мин ${seconds} сек`;
       }
     }, 1000);
   }
@@ -630,8 +660,21 @@
     document.getElementById("successOverlay").classList.remove("show");
   }
 
-  // ✅ PAGE LOAD дээр cooldown шалгана
-  checkCooldown();
+  // ✅ PAGE LOAD
+  window.addEventListener("load", () => {
+    checkCooldown();
+
+    const lastSubmitTime = localStorage.getItem("lastSubmitTime");
+    if (!lastSubmitTime) return;
+
+    const waitTime = 15 * 60 * 1000;
+    const diff = Date.now() - Number(lastSubmitTime);
+
+    if (diff < waitTime) {
+      showSuccessEffect();
+      startPopupCountdown();
+    }
+  });
 
   receiptForm.addEventListener("submit", async function(e){
     e.preventDefault();
@@ -645,8 +688,11 @@
       const waitTime = 15 * 60 * 1000;
 
       if (diff < waitTime) {
-        const remaining = Math.ceil((waitTime - diff) / 60000);
-        return showMessage("danger", `Та дахин илгээхийн тулд ${remaining} минут хүлээнэ үү.`);
+        const remainingMs = waitTime - diff;
+        const minutes = Math.floor(remainingMs / 60000);
+        const seconds = Math.floor((remainingMs % 60000) / 1000);
+
+        return showMessage("danger", `Та дахин илгээхийн тулд ${minutes} мин ${seconds} сек хүлээнэ үү.`);
       }
     }
 
@@ -701,7 +747,7 @@
 
       if (data.status === "success") {
 
-        // ✅ SAVE TIME HERE
+        // ✅ SAVE TIME
         localStorage.setItem("lastSubmitTime", Date.now());
 
         showMessage("success", "Амжилттай илгээгдлээ.");
@@ -709,7 +755,8 @@
         fileText.textContent = "Баримтын зураг сонгох";
 
         showSuccessEffect();
-        checkCooldown(); // 🔥 шууд countdown эхлүүлнэ
+        startPopupCountdown();
+        checkCooldown();
 
       } else {
         showMessage("danger", "Алдаа гарлаа.");
@@ -720,7 +767,6 @@
     } finally {
       isSubmitting = false;
       submitBtn.disabled = false;
-      submitBtn.textContent = "Илгээх";
     }
   });
 </script>
