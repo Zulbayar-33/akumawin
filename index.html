@@ -1,750 +1,213 @@
 <!doctype html>
 <html lang="mn">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AKUMA WIN — Азтан шалгаруулах аян</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    :root{
-      --red:#d62828;
-      --red-dark:#a31212;
-      --yellow:#ffd23f;
-      --text:#241919;
-      --muted:#6f5b57;
-      --line:#ead8cf;
-      --card:#ffffff;
-      --shadow:0 18px 40px rgba(140,40,20,.12);
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AKUMA WIN</title>
 
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{
-      margin:0;
-      background:
-        radial-gradient(circle at top right, rgba(255,210,63,.18), transparent 26%),
-        linear-gradient(180deg, #fff5ea 0%, #fff9f3 42%, #ffffff 100%);
-      color:var(--text);
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    .hero-wrap{
-      padding:24px 0 18px;
-    }
-
-    .hero-card{
-      background:linear-gradient(135deg, #fff7ef 0%, #fff0df 55%, #ffe6c8 100%);
-      border:1px solid rgba(214,40,40,.08);
-      border-radius:36px;
-      padding:18px;
-      box-shadow:var(--shadow);
-      overflow:hidden;
-      position:relative;
-    }
-
-    .hero-card::after{
-      content:"";
-      position:absolute;
-      width:320px;
-      height:320px;
-      right:-110px;
-      top:-70px;
-      border-radius:50%;
-      background:radial-gradient(circle, rgba(255,210,63,.35), rgba(255,210,63,0));
-      pointer-events:none;
-    }
-
-    .hero-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:22px;
-      align-items:stretch;
-    }
-
-    .hero-left{
-      background:linear-gradient(135deg, #d62828 0%, #b71c1c 100%);
-      border-radius:28px;
-      padding:28px;
-      color:#fff;
-      min-height:100%;
-      position:relative;
-      overflow:hidden;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-    }
-
-    .hero-left::before,
-    .hero-left::after{
-      content:"";
-      position:absolute;
-      border-radius:999px;
-      background:rgba(255,255,255,.08);
-    }
-
-    .hero-left::before{
-      width:180px;
-      height:180px;
-      right:-50px;
-      top:-40px;
-    }
-
-    .hero-left::after{
-      width:260px;
-      height:260px;
-      left:-110px;
-      bottom:-140px;
-    }
-
-    .hero-left-content{
-      position:relative;
-      z-index:2;
-    }
-
-    .hero-left-title{
-      font-weight:900;
-      font-size:clamp(26px,4vw,46px);
-      letter-spacing:-.03em;
-      text-align:center;
-    }
-
-    .hero-left-sub{
-      margin-top:12px;
-      font-size:18px;
-      font-weight:500;
-      text-align:center;
-      opacity:.92;
-    }
-
-    .hero-right{
-      display:grid;
-      gap:16px;
-      align-content:start;
-    }
-
-    .poster-card,
-    .mini-card,
-    .form-shell{
-      background:var(--card);
-      border-radius:28px;
-      border:1px solid var(--line);
-      box-shadow:var(--shadow);
-    }
-
-    .poster-card{
-      padding:14px;
-    }
-
-    .poster-frame{
-      border-radius:22px;
-      background:#fff;
-      overflow:hidden;
-      border:1px solid #f0ddd2;
-      aspect-ratio:4/5;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      position:relative;
-      padding:10px;
-    }
-
-    .poster-frame img{
-      width:100%;
-      height:100%;
-      object-fit:contain;
-      display:block;
-      background:#fff;
-    }
-
-    .poster-placeholder{
-      position:absolute;
-      inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex-direction:column;
-      text-align:center;
-      padding:20px;
-      color:#7b5951;
-      background:linear-gradient(135deg, rgba(214,40,40,.06), rgba(255,210,63,.16));
-    }
-
-    .poster-badge{
-      background:var(--yellow);
-      color:#442600;
-      font-weight:900;
-      border-radius:999px;
-      display:inline-block;
-      padding:8px 14px;
-      font-size:12px;
-      margin-bottom:12px;
-    }
-
-    .mini-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:12px;
-    }
-
-    .mini-card{
-      padding:18px 16px;
-      text-align:center;
-    }
-
-    .mini-top{
-      color:var(--muted);
-      font-size:12px;
-      margin-bottom:6px;
-      font-weight:700;
-      text-transform:uppercase;
-      letter-spacing:.05em;
-    }
-
-    .mini-number{
-      font-size:18px;
-      font-weight:900;
-      line-height:1.1;
-    }
-
-    .main-sections{
-      padding:8px 0 42px;
-    }
-
-    .single-col{
-      max-width:760px;
-      margin:0 auto;
-    }
-
-    .form-shell{
-      padding:20px;
-      position:relative;
-    }
-
-    .form-title{
-      font-size:28px;
-      line-height:1.1;
-      font-weight:900;
-      margin-bottom:8px;
-    }
-
-    .form-sub{
-      color:var(--muted);
-      margin-bottom:18px;
-      line-height:1.6;
-    }
-
-    .form-label{
-      font-weight:800;
-      margin-bottom:8px;
-      color:#231717;
-    }
-
-    .required{
-      color:var(--red);
-    }
-
-    .form-control{
-      border-radius:16px;
-      padding:14px 16px;
-      border:1px solid #decac0;
-      min-height:52px;
-      color:#241919;
-    }
-
-    .form-control:focus{
-      border-color:#e35d46;
-      box-shadow:0 0 0 .22rem rgba(214,40,40,.12);
-    }
-
-    .upload-box{
-      width:100%;
-      border:2px dashed #e4beb5;
-      border-radius:20px;
-      background:linear-gradient(180deg,#fff9f6,#fff4ee);
-      padding:28px 18px;
-      text-align:center;
-      cursor:pointer;
-      transition:.25s ease;
-    }
-
-    .upload-box:hover{
-      border-color:#d62828;
-      transform:translateY(-2px);
-    }
-
-    .upload-icon{
-      width:70px;
-      height:70px;
-      border-radius:50%;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      background:#fff;
-      font-size:30px;
-      margin-bottom:12px;
-      border:1px solid #f2d6cc;
-      box-shadow:0 10px 20px rgba(0,0,0,.05);
-    }
-
-    .submit-btn{
-      width:100%;
-      border:none;
-      border-radius:18px;
-      padding:15px 22px;
-      background:linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%);
-      color:#fff;
-      font-weight:900;
-      font-size:16px;
-      box-shadow:0 16px 28px rgba(214,40,40,.24);
-      transition:.25s ease;
-    }
-
-    .submit-btn:hover{
-      transform:translateY(-2px);
-    }
-
-    .submit-btn:disabled{
-      opacity:.75;
-      cursor:not-allowed;
-    }
-
-    .result-box .alert{
-      border-radius:16px;
-      margin-bottom:0;
-      border:none;
-      animation: popIn .35s ease;
-    }
-
-    .footer{
-      color:#826b63;
-      font-size:13px;
-      text-align:center;
-      padding:0 0 30px;
-    }
-
-    .honeypot{
-      position:absolute!important;
-      left:-9999px!important;
-      opacity:0!important;
-    }
-
-    .success-overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.45);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:9999;
-      backdrop-filter:blur(4px);
-    }
-
-    .success-overlay.show{
-      display:flex;
-      animation:fadeIn .25s ease;
-    }
-
-    .success-box{
-      width:min(92vw,430px);
-      background:linear-gradient(180deg,#fffdf8 0%, #fff6e8 100%);
-      border-radius:28px;
-      padding:28px 24px;
-      text-align:center;
-      box-shadow:0 24px 60px rgba(0,0,0,.18);
-      border:1px solid rgba(214,40,40,.12);
-      animation:popIn .35s ease;
-      position:relative;
-      overflow:hidden;
-    }
-
-    .success-icon{
-      width:92px;
-      height:92px;
-      margin:0 auto 14px;
-      border-radius:50%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:42px;
-      background:linear-gradient(135deg, #ffd23f, #ffef9f);
-      box-shadow:0 12px 30px rgba(255,210,63,.4);
-    }
-
-    .success-title{
-      font-size:30px;
-      font-weight:900;
-      color:#b71c1c;
-      margin-bottom:8px;
-    }
-
-    .success-text{
-      color:#5e4a45;
-      font-size:16px;
-      line-height:1.6;
-      margin-bottom:16px;
-    }
-
-    .success-btn{
-      border:none;
-      border-radius:16px;
-      padding:12px 18px;
-      background:linear-gradient(135deg, #d62828 0%, #a31212 100%);
-      color:white;
-      font-weight:800;
-      min-width:140px;
-    }
-
-    .confetti{
-      position:fixed;
-      width:10px;
-      height:18px;
-      top:-20px;
-      opacity:.9;
-      z-index:10000;
-      animation:fall linear forwards;
-    }
-
-    @keyframes fadeIn{
-      from{opacity:0}
-      to{opacity:1}
-    }
-
-    @keyframes popIn{
-      0%{transform:scale(.82); opacity:0}
-      100%{transform:scale(1); opacity:1}
-    }
-
-    @keyframes fall{
-      to{
-        transform:translateY(110vh) rotate(720deg);
-        opacity:1;
-      }
-    }
-
-    @media (max-width: 991px){
-      .hero-grid,
-      .mini-grid{
-        grid-template-columns:1fr;
-      }
-
-      .hero-left{
-        padding:22px;
-      }
-
-      .hero-card{
-        padding:14px;
-      }
-    }
-  </style>
+<style>
+body{font-family:sans-serif;background:#fff5ea}
+.submit-btn{width:100%;padding:14px;background:#d62828;color:#fff;border:none;border-radius:12px}
+.success-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center}
+.success-overlay.show{display:flex}
+.success-box{background:#fff;padding:30px;border-radius:20px;text-align:center}
+.confetti{position:fixed;width:10px;height:18px;top:-20px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(100vh) rotate(720deg)}}
+</style>
 </head>
+
 <body>
-  <div class="container hero-wrap">
-    <section class="hero-card">
-      <div class="hero-grid">
-        <div class="hero-left">
-          <div class="hero-left-content">
-            <div class="hero-left-title">"МОРЬТОЙ АКУМА"</div>
-            <div class="hero-left-sub">урамшуулалт хөтөлбөр</div>
-          </div>
-        </div>
 
-        <div class="hero-right">
-          <div class="poster-card">
-            <div class="poster-frame">
-              <img src="akuma-poster.jpg" alt="AKUMA campaign poster" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-              <div class="poster-placeholder" style="display:none;">
-                <span class="poster-badge">AKUMA POSTER</span>
-                <h3 style="font-weight:900; margin-bottom:10px;">Энд campaign постер зураг орно</h3>
-                <p style="margin:0; max-width:280px; line-height:1.6;">akuma-poster.jpg нэртэй зургаа ижил folder дээрээ байрлуулаад шууд харагдуулж болно.</p>
-              </div>
-            </div>
-          </div>
+<div class="container mt-5">
+  <h3>Баримт бүртгүүлэх</h3>
 
-          <div class="mini-grid">
-            <div class="mini-card">
-              <div class="mini-top">Сугалааны болзол хангах дүн</div>
-              <div class="mini-number">200'000₮</div>
-            </div>
-            <div class="mini-card">
-              <div class="mini-top">Эхлэх огноо</div>
-              <div class="mini-number">2026.03.24</div>
-            </div>
-            <div class="mini-card">
-              <div class="mini-top">Дуусах огноо</div>
-              <div class="mini-number">2027.01.15</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+  <form id="receiptForm">
+    <input type="text" id="name" class="form-control mb-2" placeholder="Нэр">
+    <input type="tel" id="phone" class="form-control mb-2" placeholder="99112233">
+    <input type="number" id="amount" class="form-control mb-2" placeholder="200000">
+    <input type="file" id="receiptImage" class="form-control mb-2">
+
+    <div id="result"></div>
+
+    <button class="submit-btn" id="submitBtn">Илгээх</button>
+  </form>
+</div>
+
+<!-- SUCCESS POPUP -->
+<div id="successOverlay" class="success-overlay">
+  <div class="success-box">
+    <h3>Амжилттай 🎉</h3>
+    <p>
+      Илгээгдлээ.<br>
+      ⏳ Дахин илгээх: <b id="cooldownText">15 мин</b>
+    </p>
+    <button onclick="closeSuccessEffect()">Хаах</button>
   </div>
-
-  <div class="container main-sections">
-    <div class="single-col">
-      <aside class="form-shell" id="registerSection">
-        <div class="form-title">Баримт бүртгүүлэх</div>
-        <div class="form-sub">Нэр, утас, худалдан авалтын дүн, баримтын зургаа оруулна уу.</div>
-
-        <form id="receiptForm" novalidate>
-          <input type="text" id="website" name="website" class="honeypot" autocomplete="off" tabindex="-1">
-
-          <div class="mb-3">
-            <label class="form-label" for="name">Өөрийн нэр <span class="required">*</span></label>
-            <input type="text" id="name" class="form-control" placeholder="Өөрийн нэр..." required>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label" for="phone">Утасны дугаар <span class="required">*</span></label>
-            <input type="tel" id="phone" class="form-control" placeholder="Жишээ: 99112233 эсвэл +97699112233" maxlength="15" inputmode="tel" required>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label" for="amount">Худалдан авалтын дүн <span class="required">*</span></label>
-            <input type="number" id="amount" class="form-control" placeholder="Жишээ: 200000" min="200000" step="1000" required>
-            <div class="small text-muted mt-2">Зөвхөн 200,000₮-өөс дээш дүнтэй баримт хүлээн авна.</div>
-          </div>
-
-          <div class="mb-4">
-            <label class="form-label">Баримтын зураг оруулах <span class="required">*</span></label>
-            <label class="upload-box">
-              <input type="file" id="receiptImage" accept="image/jpeg,image/png,image/webp" hidden required>
-              <div class="upload-icon">🖼️</div>
-              <div id="fileText" style="font-weight:800; margin-bottom:4px;">Баримтын зураг сонгох</div>
-              <div class="small text-muted">JPG, PNG, WEBP • max 5MB</div>
-            </label>
-          </div>
-
-          <div class="result-box mb-3" id="result"></div>
-          <button type="submit" class="submit-btn" id="submitBtn">Илгээх</button>
-        </form>
-      </aside>
-    </div>
-  </div>
-
-  <div class="footer">© <span id="year"></span> AKUMA Campaign Landing</div>
-
-  <div id="successOverlay" class="success-overlay">
-    <div class="success-box">
-      <div class="success-icon">🎉</div>
-      <div class="success-title">Амжилттай!</div>
-      <div class="success-text">
-        Таны мэдээлэл амжилттай илгээгдлээ.<br>
-        Сугалаандаа идэвхтэй оролцсонд баярлалаа.
-      </div>
-      <button type="button" class="success-btn" onclick="closeSuccessEffect()">Хаах</button>
-    </div>
-  </div>
-
- <!-- 🔽 ӨӨРЧЛӨЛТ ЗӨВХӨН JS ХЭСЭГТ -->
-<!-- 🔽 ӨӨРЧЛӨЛТ ЗӨВХӨН JS ХЭСЭГТ -->
+</div>
 
 <script>
 const scriptURL = "https://script.google.com/macros/s/AKfycbxp_H-ZD56dKnK33joufa5jhybPHHOwUvRdWkg8nPJKLQqaVZ0_rZ0-9c-gY-yyrdgg6A/exec";
 
-const receiptForm = document.getElementById("receiptForm");
-const fileInput = document.getElementById("receiptImage");
-const fileText = document.getElementById("fileText");
+const form = document.getElementById("receiptForm");
+const btn = document.getElementById("submitBtn");
 const result = document.getElementById("result");
-const submitBtn = document.getElementById("submitBtn");
-const formLoadedAt = Date.now();
-let isSubmitting = false;
 
-document.getElementById("year").textContent = new Date().getFullYear();
+let isSubmitting=false;
 
-fileInput.addEventListener("change", () => {
-  fileText.textContent = fileInput.files.length > 0 ? fileInput.files[0].name : "Баримтын зураг сонгох";
-});
-
-document.getElementById("phone").addEventListener("input", function () {
-  let value = this.value.replace(/[^\d+]/g, "");
-  if (value.includes("+")) {
-    value = "+" + value.replace(/\+/g, "");
-  }
-  this.value = value.slice(0, 15);
-});
-
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+// base64
+function fileToBase64(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=()=>res(r.result);
+    r.onerror=rej;
+    r.readAsDataURL(file);
   });
 }
 
-function showMessage(type, text, fileUrl = "") {
-  result.innerHTML = `
-    <div class="alert alert-${type}">
-      ${text}
-      ${fileUrl ? `<br><a href="${fileUrl}" target="_blank">Зураг харах</a>` : ""}
-    </div>
-  `;
+// message
+function showMessage(type,text){
+  result.innerHTML=`<div class="alert alert-${type}">${text}</div>`;
 }
 
-function launchConfetti() {
-  const colors = ["#d62828", "#ffd23f", "#ffffff"];
-  for (let i = 0; i < 60; i++) {
-    const el = document.createElement("div");
-    el.className = "confetti";
-    el.style.left = Math.random() * 100 + "vw";
-    el.style.background = colors[Math.floor(Math.random() * colors.length)];
-    el.style.animationDuration = (Math.random() * 2 + 2) + "s";
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 4000);
+// confetti
+function launchConfetti(){
+  for(let i=0;i<40;i++){
+    const d=document.createElement("div");
+    d.className="confetti";
+    d.style.left=Math.random()*100+"vw";
+    d.style.background=["red","yellow","white"][Math.floor(Math.random()*3)];
+    d.style.animationDuration=(Math.random()*2+2)+"s";
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(),3000);
   }
 }
 
-function showSuccessEffect() {
+// popup
+function showSuccessEffect(){
   document.getElementById("successOverlay").classList.add("show");
   launchConfetti();
 }
-
-function closeSuccessEffect() {
+function closeSuccessEffect(){
   document.getElementById("successOverlay").classList.remove("show");
 }
 
-// ✅ BUTTON COUNTDOWN
-function checkCooldown() {
-  const last = localStorage.getItem("lastSubmitTime");
-  if (!last) return;
+// BUTTON countdown
+function checkCooldown(){
+  const t=localStorage.getItem("lastSubmitTime");
+  if(!t) return;
 
-  const wait = 15 * 60 * 1000;
+  const wait=15*60*1000;
 
-  const interval = setInterval(() => {
-    const diff = Date.now() - Number(last);
+  const int=setInterval(()=>{
+    const diff=Date.now()-t;
 
-    if (diff >= wait) {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Илгээх";
-      clearInterval(interval);
-    } else {
-      submitBtn.disabled = true;
-
-      const remain = wait - diff;
-      const m = Math.floor(remain / 60000);
-      const s = Math.floor((remain % 60000) / 1000);
-
-      submitBtn.textContent = `Хүлээнэ үү (${m}:${s.toString().padStart(2,"0")})`;
+    if(diff>=wait){
+      btn.disabled=false;
+      btn.textContent="Илгээх";
+      clearInterval(int);
+    }else{
+      btn.disabled=true;
+      const m=Math.floor((wait-diff)/60000);
+      const s=Math.floor(((wait-diff)%60000)/1000);
+      btn.textContent=`Хүлээнэ үү ${m}:${s.toString().padStart(2,"0")}`;
     }
-  }, 1000);
+  },1000);
 }
 
-// ✅ POPUP COUNTDOWN
-function startPopupCountdown() {
-  const el = document.getElementById("cooldownText");
-  const last = localStorage.getItem("lastSubmitTime");
-  if (!last || !el) return;
+// POPUP countdown
+function startPopupCountdown(){
+  const el=document.getElementById("cooldownText");
+  const t=localStorage.getItem("lastSubmitTime");
+  if(!t||!el) return;
 
-  const wait = 15 * 60 * 1000;
+  const wait=15*60*1000;
 
-  const interval = setInterval(() => {
-    const diff = Date.now() - Number(last);
+  const int=setInterval(()=>{
+    const diff=Date.now()-t;
 
-    if (diff >= wait) {
-      el.textContent = "Одоо боломжтой";
-      clearInterval(interval);
-    } else {
-      const remain = wait - diff;
-      const m = Math.floor(remain / 60000);
-      const s = Math.floor((remain % 60000) / 1000);
-
-      el.textContent = `${m} мин ${s} сек`;
+    if(diff>=wait){
+      el.textContent="Боломжтой";
+      clearInterval(int);
+    }else{
+      const m=Math.floor((wait-diff)/60000);
+      const s=Math.floor(((wait-diff)%60000)/1000);
+      el.textContent=`${m} мин ${s} сек`;
     }
-  }, 1000);
+  },1000);
 }
 
-// ✅ PAGE LOAD
-window.addEventListener("load", () => {
+// load
+window.onload=()=>{
   checkCooldown();
 
-  const last = localStorage.getItem("lastSubmitTime");
-  if (!last) return;
-
-  const wait = 15 * 60 * 1000;
-  if (Date.now() - Number(last) < wait) {
+  const t=localStorage.getItem("lastSubmitTime");
+  if(t && Date.now()-t < 15*60*1000){
     showSuccessEffect();
     startPopupCountdown();
   }
-});
+};
 
-receiptForm.addEventListener("submit", async function(e){
+// submit
+form.addEventListener("submit",async e=>{
   e.preventDefault();
-  if (isSubmitting) return;
+  if(isSubmitting) return;
 
-  // ✅ 15 MIN CHECK
-  const last = localStorage.getItem("lastSubmitTime");
-  if (last) {
-    const wait = 15 * 60 * 1000;
-    const diff = Date.now() - Number(last);
-
-    if (diff < wait) {
-      const remain = wait - diff;
-      const m = Math.floor(remain / 60000);
-      const s = Math.floor((remain % 60000) / 1000);
-
-      return showMessage("danger", `Та ${m} мин ${s} сек хүлээнэ үү`);
+  const last=localStorage.getItem("lastSubmitTime");
+  if(last){
+    const diff=Date.now()-last;
+    if(diff<15*60*1000){
+      const m=Math.floor((15*60*1000-diff)/60000);
+      return showMessage("danger",`${m} минут хүлээнэ үү`);
     }
   }
 
-  const name = document.getElementById("name").value.trim();
-  const rawPhone = document.getElementById("phone").value.trim();
-  let phone = rawPhone.replace(/\D/g, "").slice(-8);
-  const amount = document.getElementById("amount").value.trim();
-  const imageFile = fileInput.files[0];
+  const name=document.getElementById("name").value;
+  const phone=document.getElementById("phone").value.replace(/\D/g,"").slice(-8);
+  const amount=document.getElementById("amount").value;
+  const file=document.getElementById("receiptImage").files[0];
 
-  if (!name) return showMessage("danger", "Нэрээ оруулна уу.");
-  if (!/^\d{8}$/.test(phone)) return showMessage("danger", "Утас буруу.");
-  if (!amount || Number(amount) < 200000) return showMessage("danger", "200,000₮-өөс дээш.");
-  if (!imageFile) return showMessage("danger", "Зураг оруулна уу.");
+  if(!name) return showMessage("danger","Нэр");
+  if(!/^\d{8}$/.test(phone)) return showMessage("danger","Утас");
+  if(amount<200000) return showMessage("danger","200k+");
+  if(!file) return showMessage("danger","Зураг");
 
-  isSubmitting = true;
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Илгээж байна...";
-  showMessage("info", "Түр хүлээнэ үү...");
+  isSubmitting=true;
+  btn.disabled=true;
+  btn.textContent="...";
 
-  try {
-    const imageBase64 = await fileToBase64(imageFile);
+  try{
+    const base64=await fileToBase64(file);
 
-    const payload = {
-      action: "submit",
-      name,
-      phone,
-      amount: Number(amount),
-      imageBase64,
-      imageName: imageFile.name,
-      mimeType: imageFile.type,
-      submittedAt: new Date().toISOString()
-    };
-
-    const res = await fetch(scriptURL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
+    const res=await fetch(scriptURL,{
+      method:"POST",
+      headers:{"Content-Type":"text/plain"},
+      body:JSON.stringify({name,phone,amount,imageBase64:base64})
     });
 
-    const data = JSON.parse(await res.text());
+    const data=JSON.parse(await res.text());
 
-    if (data.status === "success") {
-      localStorage.setItem("lastSubmitTime", Date.now());
+    if(data.status==="success"){
+      localStorage.setItem("lastSubmitTime",Date.now());
 
-      showMessage("success", "Амжилттай илгээгдлээ.");
-      receiptForm.reset();
-      fileText.textContent = "Баримтын зураг сонгох";
+      showMessage("success","OK");
+      form.reset();
 
       showSuccessEffect();
       startPopupCountdown();
       checkCooldown();
-    } else {
-      showMessage("danger", "Алдаа гарлаа.");
+    }else{
+      showMessage("danger","Алдаа");
     }
 
-  } catch (err) {
-    showMessage("danger", "Сервер алдаа.");
-  } finally {
-    isSubmitting = false;
+  }catch{
+    showMessage("danger","Server алдаа");
   }
+
+  isSubmitting=false;
 });
 </script>
+
 </body>
 </html>
