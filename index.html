@@ -50,162 +50,187 @@ body{font-family:sans-serif;background:#fff5ea}
 <script>
 const scriptURL = "https://script.google.com/macros/s/AKfycbxp_H-ZD56dKnK33joufa5jhybPHHOwUvRdWkg8nPJKLQqaVZ0_rZ0-9c-gY-yyrdgg6A/exec";
 
-const form = document.getElementById("receiptForm");
-const btn = document.getElementById("submitBtn");
+const receiptForm = document.getElementById("receiptForm");
+const fileInput = document.getElementById("receiptImage");
+const fileText = document.getElementById("fileText");
 const result = document.getElementById("result");
+const submitBtn = document.getElementById("submitBtn");
 
-let isSubmitting=false;
+let isSubmitting = false;
+const formLoadedAt = Date.now();
 
-// base64
-function fileToBase64(file){
-  return new Promise((res,rej)=>{
-    const r=new FileReader();
-    r.onload=()=>res(r.result);
-    r.onerror=rej;
-    r.readAsDataURL(file);
+document.getElementById("year").textContent = new Date().getFullYear();
+
+// FILE NAME
+fileInput.addEventListener("change", () => {
+  fileText.textContent = fileInput.files.length > 0 ? fileInput.files[0].name : "Баримтын зураг сонгох";
+});
+
+// PHONE FORMAT
+document.getElementById("phone").addEventListener("input", function () {
+  this.value = this.value.replace(/\D/g, "").slice(0, 8);
+});
+
+// BASE64
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
   });
 }
 
-// message
-function showMessage(type,text){
-  result.innerHTML=`<div class="alert alert-${type}">${text}</div>`;
+// ALERT
+function showMessage(type, text) {
+  result.innerHTML = `<div class="alert alert-${type}">${text}</div>`;
 }
 
-// confetti
-function launchConfetti(){
-  for(let i=0;i<40;i++){
-    const d=document.createElement("div");
-    d.className="confetti";
-    d.style.left=Math.random()*100+"vw";
-    d.style.background=["red","yellow","white"][Math.floor(Math.random()*3)];
-    d.style.animationDuration=(Math.random()*2+2)+"s";
-    document.body.appendChild(d);
-    setTimeout(()=>d.remove(),3000);
-  }
-}
-
-// popup
-function showSuccessEffect(){
+// SUCCESS EFFECT
+function showSuccessEffect() {
   document.getElementById("successOverlay").classList.add("show");
-  launchConfetti();
 }
-function closeSuccessEffect(){
+function closeSuccessEffect() {
   document.getElementById("successOverlay").classList.remove("show");
 }
 
-// BUTTON countdown
-function checkCooldown(){
-  const t=localStorage.getItem("lastSubmitTime");
-  if(!t) return;
+// ⏱ COOLDOWN BUTTON
+function checkCooldown() {
+  const last = localStorage.getItem("lastSubmitTime");
+  if (!last) return;
 
-  const wait=15*60*1000;
+  const wait = 15 * 60 * 1000;
 
-  const int=setInterval(()=>{
-    const diff=Date.now()-t;
+  const interval = setInterval(() => {
+    const diff = Date.now() - Number(last);
 
-    if(diff>=wait){
-      btn.disabled=false;
-      btn.textContent="Илгээх";
-      clearInterval(int);
-    }else{
-      btn.disabled=true;
-      const m=Math.floor((wait-diff)/60000);
-      const s=Math.floor(((wait-diff)%60000)/1000);
-      btn.textContent=`Хүлээнэ үү ${m}:${s.toString().padStart(2,"0")}`;
+    if (diff >= wait) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Илгээх";
+      clearInterval(interval);
+    } else {
+      submitBtn.disabled = true;
+
+      const remain = wait - diff;
+      const m = Math.floor(remain / 60000);
+      const s = Math.floor((remain % 60000) / 1000);
+
+      submitBtn.textContent = `Хүлээнэ үү (${m}:${s.toString().padStart(2,"0")})`;
     }
-  },1000);
+  }, 1000);
 }
 
-// POPUP countdown
-function startPopupCountdown(){
-  const el=document.getElementById("cooldownText");
-  const t=localStorage.getItem("lastSubmitTime");
-  if(!t||!el) return;
+// ⏱ POPUP TIMER
+function startPopupCountdown() {
+  const el = document.getElementById("cooldownText");
+  const last = localStorage.getItem("lastSubmitTime");
+  if (!last || !el) return;
 
-  const wait=15*60*1000;
+  const wait = 15 * 60 * 1000;
 
-  const int=setInterval(()=>{
-    const diff=Date.now()-t;
+  const interval = setInterval(() => {
+    const diff = Date.now() - Number(last);
 
-    if(diff>=wait){
-      el.textContent="Боломжтой";
-      clearInterval(int);
-    }else{
-      const m=Math.floor((wait-diff)/60000);
-      const s=Math.floor(((wait-diff)%60000)/1000);
-      el.textContent=`${m} мин ${s} сек`;
+    if (diff >= wait) {
+      el.textContent = "Одоо дахин илгээж болно";
+      clearInterval(interval);
+    } else {
+      const remain = wait - diff;
+      const m = Math.floor(remain / 60000);
+      const s = Math.floor((remain % 60000) / 1000);
+
+      el.textContent = `${m} мин ${s} сек`;
     }
-  },1000);
+  }, 1000);
 }
 
-// load
-window.onload=()=>{
+// LOAD
+window.addEventListener("load", () => {
   checkCooldown();
+});
 
-  const t=localStorage.getItem("lastSubmitTime");
-  if(t && Date.now()-t < 15*60*1000){
-    showSuccessEffect();
-    startPopupCountdown();
-  }
-};
-
-// submit
-form.addEventListener("submit",async e=>{
+// SUBMIT
+receiptForm.addEventListener("submit", async function(e){
   e.preventDefault();
-  if(isSubmitting) return;
+  if (isSubmitting) return;
 
-  const last=localStorage.getItem("lastSubmitTime");
-  if(last){
-    const diff=Date.now()-last;
-    if(diff<15*60*1000){
-      const m=Math.floor((15*60*1000-diff)/60000);
-      return showMessage("danger",`${m} минут хүлээнэ үү`);
+  // COOLDOWN CHECK
+  const last = localStorage.getItem("lastSubmitTime");
+  if (last) {
+    const wait = 15 * 60 * 1000;
+    const diff = Date.now() - Number(last);
+
+    if (diff < wait) {
+      const remain = wait - diff;
+      const m = Math.floor(remain / 60000);
+      const s = Math.floor((remain % 60000) / 1000);
+
+      return showMessage("danger", `Та ${m} мин ${s} сек хүлээнэ үү`);
     }
   }
 
-  const name=document.getElementById("name").value;
-  const phone=document.getElementById("phone").value.replace(/\D/g,"").slice(-8);
-  const amount=document.getElementById("amount").value;
-  const file=document.getElementById("receiptImage").files[0];
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const amount = document.getElementById("amount").value.trim();
+  const imageFile = fileInput.files[0];
 
-  if(!name) return showMessage("danger","Нэр");
-  if(!/^\d{8}$/.test(phone)) return showMessage("danger","Утас");
-  if(amount<200000) return showMessage("danger","200k+");
-  if(!file) return showMessage("danger","Зураг");
+  if (!name) return showMessage("danger", "Нэрээ оруулна уу");
+  if (!/^\d{8}$/.test(phone)) return showMessage("danger", "Утас буруу");
+  if (!amount || Number(amount) < 200000) return showMessage("danger", "200,000₮-өөс дээш");
+  if (!imageFile) return showMessage("danger", "Зураг оруулна уу");
 
-  isSubmitting=true;
-  btn.disabled=true;
-  btn.textContent="...";
+  isSubmitting = true;
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Илгээж байна...";
+  showMessage("info", "Түр хүлээнэ үү...");
 
-  try{
-    const base64=await fileToBase64(file);
+  try {
+    const imageBase64 = await fileToBase64(imageFile);
 
-    const res=await fetch(scriptURL,{
-      method:"POST",
-      headers:{"Content-Type":"text/plain"},
-      body:JSON.stringify({name,phone,amount,imageBase64:base64})
+    const payload = {
+      name,
+      phone,
+      amount: Number(amount),
+      imageBase64,
+      imageName: imageFile.name,
+      mimeType: imageFile.type
+    };
+
+    const res = await fetch(scriptURL, {
+      method: "POST",
+      body: JSON.stringify(payload)
     });
 
-    const data=JSON.parse(await res.text());
+    const text = await res.text();
 
-    if(data.status==="success"){
-      localStorage.setItem("lastSubmitTime",Date.now());
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      console.log("RAW RESPONSE:", text);
+      throw new Error("Backend JSON биш байна");
+    }
 
-      showMessage("success","OK");
-      form.reset();
+    if (data.status === "success") {
+      localStorage.setItem("lastSubmitTime", Date.now());
+
+      showMessage("success", "Амжилттай илгээгдлээ");
+      receiptForm.reset();
+      fileText.textContent = "Баримтын зураг сонгох";
 
       showSuccessEffect();
       startPopupCountdown();
       checkCooldown();
-    }else{
-      showMessage("danger","Алдаа");
+    } else {
+      showMessage("danger", data.message || "Алдаа гарлаа");
     }
 
-  }catch{
-    showMessage("danger","Server алдаа");
+  } catch (err) {
+    console.error(err);
+    showMessage("danger", "Сервер алдаа эсвэл backend буруу");
+  } finally {
+    isSubmitting = false;
   }
-
-  isSubmitting=false;
 });
 </script>
 
