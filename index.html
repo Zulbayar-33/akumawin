@@ -536,168 +536,193 @@
     </div>
   </div>
 
-  <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbxp_H-ZD56dKnK33joufa5jhybPHHOwUvRdWkg8nPJKLQqaVZ0_rZ0-9c-gY-yyrdgg6A/exec";
+ <!-- 🔽 ӨӨРЧЛӨЛТ ЗӨВХӨН JS ХЭСЭГТ -->
+<script>
+  const scriptURL = "https://script.google.com/macros/s/AKfycbxp_H-ZD56dKnK33joufa5jhybPHHOwUvRdWkg8nPJKLQqaVZ0_rZ0-9c-gY-yyrdgg6A/exec";
 
-    const receiptForm = document.getElementById("receiptForm");
-    const fileInput = document.getElementById("receiptImage");
-    const fileText = document.getElementById("fileText");
-    const result = document.getElementById("result");
-    const submitBtn = document.getElementById("submitBtn");
-    const formLoadedAt = Date.now();
-    let isSubmitting = false;
+  const receiptForm = document.getElementById("receiptForm");
+  const fileInput = document.getElementById("receiptImage");
+  const fileText = document.getElementById("fileText");
+  const result = document.getElementById("result");
+  const submitBtn = document.getElementById("submitBtn");
+  const formLoadedAt = Date.now();
+  let isSubmitting = false;
 
-    document.getElementById("year").textContent = new Date().getFullYear();
+  document.getElementById("year").textContent = new Date().getFullYear();
 
-    fileInput.addEventListener("change", function () {
-      fileText.textContent = this.files.length > 0 ? this.files[0].name : "Баримтын зураг сонгох";
+  fileInput.addEventListener("change", function () {
+    fileText.textContent = this.files.length > 0 ? this.files[0].name : "Баримтын зураг сонгох";
+  });
+
+  document.getElementById("phone").addEventListener("input", function () {
+    let value = this.value.replace(/[^\d+]/g, "");
+
+    if (value.includes("+")) {
+      if (!value.startsWith("+")) {
+        value = "+" + value.replace(/\+/g, "");
+      } else {
+        value = "+" + value.slice(1).replace(/\+/g, "");
+      }
+    }
+
+    this.value = value.slice(0, 15);
+  });
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+      reader.readAsDataURL(file);
     });
+  }
 
-    document.getElementById("phone").addEventListener("input", function () {
-      let value = this.value.replace(/[^\d+]/g, "");
+  function showMessage(type, text, fileUrl = "") {
+    result.innerHTML = `
+      <div class="alert alert-${type}">
+        ${text}
+        ${fileUrl ? `<br><a href="${fileUrl}" target="_blank">Зураг харах</a>` : ""}
+      </div>
+    `;
+  }
 
-      if (value.includes("+")) {
-        if (!value.startsWith("+")) {
-          value = "+" + value.replace(/\+/g, "");
-        } else {
-          value = "+" + value.slice(1).replace(/\+/g, "");
-        }
-      }
+  // ✅ COOL DOWN CHECK FUNCTION
+  function checkCooldown() {
+    const lastSubmitTime = localStorage.getItem("lastSubmitTime");
+    if (!lastSubmitTime) return;
 
-      this.value = value.slice(0, 15);
-    });
+    const waitTime = 15 * 60 * 1000;
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const diff = now - Number(lastSubmitTime);
 
-    function fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-        reader.readAsDataURL(file);
-      });
-    }
-
-    function showMessage(type, text, fileUrl = "") {
-      result.innerHTML = `
-        <div class="alert alert-${type}">
-          ${text}
-          ${fileUrl ? `<br><a href="${fileUrl}" target="_blank" rel="noopener noreferrer">Зураг харах</a>` : ""}
-        </div>
-      `;
-    }
-
-    function launchConfetti() {
-      const colors = ["#d62828", "#ffd23f", "#ffffff", "#ff9f1c", "#b71c1c"];
-      for (let i = 0; i < 70; i++) {
-        const confetti = document.createElement("div");
-        confetti.className = "confetti";
-        confetti.style.left = Math.random() * 100 + "vw";
-        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.animationDuration = (Math.random() * 2 + 2) + "s";
-        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
-        document.body.appendChild(confetti);
-        setTimeout(() => confetti.remove(), 4500);
-      }
-    }
-
-    function showSuccessEffect() {
-      document.getElementById("successOverlay").classList.add("show");
-      launchConfetti();
-    }
-
-    function closeSuccessEffect() {
-      document.getElementById("successOverlay").classList.remove("show");
-    }
-
-    receiptForm.addEventListener("submit", async function(e){
-      e.preventDefault();
-      if (isSubmitting) return;
-
-      const website = document.getElementById("website").value.trim();
-      const name = document.getElementById("name").value.trim();
-      const rawPhone = document.getElementById("phone").value.trim();
-
-      let phone = rawPhone.replace(/\D/g, "");
-
-      if (phone.startsWith("976")) {
-        phone = phone.slice(3);
-      }
-
-      if (phone.length > 8) {
-        phone = phone.slice(-8);
-      }
-
-      const amount = document.getElementById("amount").value.trim();
-      const imageFile = fileInput.files[0];
-
-      if (website) return showMessage("danger", "Spam илэрлээ.");
-      if (Date.now() - formLoadedAt < 3000) return showMessage("danger", "3 секунд хүлээгээд дахин оролдоно уу.");
-      if (!name) return showMessage("danger", "Нэрээ оруулна уу.");
-      if (!/^\d{8}$/.test(phone)) return showMessage("danger", "Утас буруу: " + rawPhone + " → " + phone);
-      if (!amount || Number(amount) < 200000) return showMessage("danger", "Зөвхөн 200,000₮-өөс дээш худалдан авалтын баримт хүлээн авна.");
-      if (!imageFile) return showMessage("danger", "Баримтын зураг сонгоно уу.");
-
-      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-      if (!allowedTypes.includes(imageFile.type)) return showMessage("danger", "Зөвхөн JPG, PNG, WEBP зураг оруулна уу.");
-      if (imageFile.size > 5 * 1024 * 1024) return showMessage("danger", "Зургийн хэмжээ 5MB-аас ихгүй байх ёстой.");
-
-      isSubmitting = true;
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Илгээж байна...";
-      showMessage("info", "Түр хүлээнэ үү...");
-
-      try {
-        const imageBase64 = await fileToBase64(imageFile);
-
-        const payload = {
-          action: "submit",
-          campaignId: "akuma-2026",
-          campaignTitle: "AKUMA азтан шалгаруулах аян",
-          campaignBrand: "AKUMA",
-          name,
-          phone,
-          amount: Number(amount),
-          imageBase64,
-          imageName: imageFile.name,
-          mimeType: imageFile.type,
-          website,
-          submittedAt: new Date().toISOString()
-        };
-
-        const response = await fetch(scriptURL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload),
-          redirect: "follow"
-        });
-
-        const rawText = await response.text();
-        if (!rawText || !rawText.trim()) {
-          throw new Error("Backend хоосон response буцаалаа");
-        }
-
-        let data;
-        try {
-          data = JSON.parse(rawText);
-        } catch (e) {
-          throw new Error("Backend JSON буцаасангүй: " + rawText);
-        }
-
-        if (data.status === "success") {
-          showMessage("success", "Амжилттай илгээгдлээ.", data.fileUrl || "");
-          receiptForm.reset();
-          fileText.textContent = "Баримтын зураг сонгох";
-          showSuccessEffect();
-        } else {
-          showMessage("danger", `Алдаа: ${data.message || "Тодорхойгүй алдаа"}`);
-        }
-      } catch (error) {
-        showMessage("danger", `Алдаа гарлаа: ${error.message}`);
-      } finally {
-        isSubmitting = false;
+      if (diff >= waitTime) {
         submitBtn.disabled = false;
         submitBtn.textContent = "Илгээх";
+        clearInterval(interval);
+      } else {
+        submitBtn.disabled = true;
+        const remaining = Math.ceil((waitTime - diff) / 60000);
+        submitBtn.textContent = `Хүлээнэ үү (${remaining} мин)`;
       }
-    });
-  </script>
+    }, 1000);
+  }
+
+  function launchConfetti() {
+    const colors = ["#d62828", "#ffd23f", "#ffffff"];
+    for (let i = 0; i < 70; i++) {
+      const confetti = document.createElement("div");
+      confetti.className = "confetti";
+      confetti.style.left = Math.random() * 100 + "vw";
+      confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.animationDuration = (Math.random() * 2 + 2) + "s";
+      document.body.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 4000);
+    }
+  }
+
+  function showSuccessEffect() {
+    document.getElementById("successOverlay").classList.add("show");
+    launchConfetti();
+  }
+
+  function closeSuccessEffect() {
+    document.getElementById("successOverlay").classList.remove("show");
+  }
+
+  // ✅ PAGE LOAD дээр cooldown шалгана
+  checkCooldown();
+
+  receiptForm.addEventListener("submit", async function(e){
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    // ✅ 15 MIN CHECK
+    const lastSubmitTime = localStorage.getItem("lastSubmitTime");
+    if (lastSubmitTime) {
+      const now = Date.now();
+      const diff = now - Number(lastSubmitTime);
+      const waitTime = 15 * 60 * 1000;
+
+      if (diff < waitTime) {
+        const remaining = Math.ceil((waitTime - diff) / 60000);
+        return showMessage("danger", `Та дахин илгээхийн тулд ${remaining} минут хүлээнэ үү.`);
+      }
+    }
+
+    const website = document.getElementById("website").value.trim();
+    const name = document.getElementById("name").value.trim();
+    const rawPhone = document.getElementById("phone").value.trim();
+
+    let phone = rawPhone.replace(/\D/g, "");
+    if (phone.startsWith("976")) phone = phone.slice(3);
+    if (phone.length > 8) phone = phone.slice(-8);
+
+    const amount = document.getElementById("amount").value.trim();
+    const imageFile = fileInput.files[0];
+
+    if (website) return showMessage("danger", "Spam илэрлээ.");
+    if (Date.now() - formLoadedAt < 3000) return showMessage("danger", "3 секунд хүлээгээд дахин оролдоно уу.");
+    if (!name) return showMessage("danger", "Нэрээ оруулна уу.");
+    if (!/^\d{8}$/.test(phone)) return showMessage("danger", "Утас буруу.");
+    if (!amount || Number(amount) < 200000) return showMessage("danger", "200,000₮-өөс дээш дүн шаардлагатай.");
+    if (!imageFile) return showMessage("danger", "Зураг оруулна уу.");
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(imageFile.type)) return showMessage("danger", "Зөвхөн зураг оруулна уу.");
+    if (imageFile.size > 5 * 1024 * 1024) return showMessage("danger", "5MB-аас ихгүй.");
+
+    isSubmitting = true;
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Илгээж байна...";
+    showMessage("info", "Түр хүлээнэ үү...");
+
+    try {
+      const imageBase64 = await fileToBase64(imageFile);
+
+      const payload = {
+        action: "submit",
+        name,
+        phone,
+        amount: Number(amount),
+        imageBase64,
+        imageName: imageFile.name,
+        mimeType: imageFile.type,
+        submittedAt: new Date().toISOString()
+      };
+
+      const response = await fetch(scriptURL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = JSON.parse(await response.text());
+
+      if (data.status === "success") {
+
+        // ✅ SAVE TIME HERE
+        localStorage.setItem("lastSubmitTime", Date.now());
+
+        showMessage("success", "Амжилттай илгээгдлээ.");
+        receiptForm.reset();
+        fileText.textContent = "Баримтын зураг сонгох";
+
+        showSuccessEffect();
+        checkCooldown(); // 🔥 шууд countdown эхлүүлнэ
+
+      } else {
+        showMessage("danger", "Алдаа гарлаа.");
+      }
+
+    } catch (error) {
+      showMessage("danger", "Сервер алдаа.");
+    } finally {
+      isSubmitting = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Илгээх";
+    }
+  });
+</script>
 </body>
 </html>
