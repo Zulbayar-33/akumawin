@@ -28,9 +28,7 @@
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    .hero-wrap{
-      padding:24px 0 18px;
-    }
+    .hero-wrap{ padding:24px 0 18px; }
 
     .hero-card{
       background:linear-gradient(135deg, #fff7ef 0%, #fff0df 55%, #ffe6c8 100%);
@@ -97,10 +95,7 @@
       bottom:-140px;
     }
 
-    .hero-left-content{
-      position:relative;
-      z-index:2;
-    }
+    .hero-left-content{ position:relative; z-index:2; }
 
     .hero-left-title{
       font-weight:900;
@@ -132,9 +127,7 @@
       box-shadow:var(--shadow);
     }
 
-    .poster-card{
-      padding:14px;
-    }
+    .poster-card{ padding:14px; }
 
     .poster-frame{
       border-radius:22px;
@@ -207,9 +200,7 @@
       line-height:1.1;
     }
 
-    .main-sections{
-      padding:8px 0 42px;
-    }
+    .main-sections{ padding:8px 0 42px; }
 
     .single-col{
       max-width:760px;
@@ -240,9 +231,7 @@
       color:#231717;
     }
 
-    .required{
-      color:var(--red);
-    }
+    .required{ color:var(--red); }
 
     .form-control{
       border-radius:16px;
@@ -300,9 +289,7 @@
       transition:.25s ease;
     }
 
-    .submit-btn:hover{
-      transform:translateY(-2px);
-    }
+    .submit-btn:hover{ transform:translateY(-2px); }
 
     .submit-btn:disabled{
       opacity:.75;
@@ -428,13 +415,8 @@
         grid-template-columns:1fr;
       }
 
-      .hero-left{
-        padding:22px;
-      }
-
-      .hero-card{
-        padding:14px;
-      }
+      .hero-left{ padding:22px; }
+      .hero-card{ padding:14px; }
     }
   </style>
 </head>
@@ -537,7 +519,8 @@
   </div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbxp_H-ZD56dKnK33joufa5jhybPHHOwUvRdWkg8nPJKLQqaVZ0_rZ0-9c-gY-yyrdgg6A/exec";
+    // YOUR DEPLOYED WEB APP URL
+    const scriptURL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL_HERE";
 
     const receiptForm = document.getElementById("receiptForm");
     const fileInput = document.getElementById("receiptImage");
@@ -545,7 +528,9 @@
     const result = document.getElementById("result");
     const submitBtn = document.getElementById("submitBtn");
     const formLoadedAt = Date.now();
+
     let isSubmitting = false;
+    let submitTimeout = null;
 
     document.getElementById("year").textContent = new Date().getFullYear();
 
@@ -608,6 +593,16 @@
       document.getElementById("successOverlay").classList.remove("show");
     }
 
+    function resetSubmitState() {
+      isSubmitting = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Илгээх";
+      if (submitTimeout) {
+        clearTimeout(submitTimeout);
+        submitTimeout = null;
+      }
+    }
+
     receiptForm.addEventListener("submit", async function(e){
       e.preventDefault();
       if (isSubmitting) return;
@@ -615,24 +610,17 @@
       const website = document.getElementById("website").value.trim();
       const name = document.getElementById("name").value.trim();
       const rawPhone = document.getElementById("phone").value.trim();
-
-      let phone = rawPhone.replace(/\D/g, "");
-
-      if (phone.startsWith("976")) {
-        phone = phone.slice(3);
-      }
-
-      if (phone.length > 8) {
-        phone = phone.slice(-8);
-      }
-
       const amount = document.getElementById("amount").value.trim();
       const imageFile = fileInput.files[0];
+
+      let phone = rawPhone.replace(/\D/g, "");
+      if (phone.startsWith("976")) phone = phone.slice(3);
+      if (phone.length > 8) phone = phone.slice(-8);
 
       if (website) return showMessage("danger", "Spam илэрлээ.");
       if (Date.now() - formLoadedAt < 3000) return showMessage("danger", "3 секунд хүлээгээд дахин оролдоно уу.");
       if (!name) return showMessage("danger", "Нэрээ оруулна уу.");
-      if (!/^\d{8}$/.test(phone)) return showMessage("danger", "Утас буруу: " + rawPhone + " → " + phone);
+      if (!/^\d{8}$/.test(phone)) return showMessage("danger", "Утасны дугаар буруу байна.");
       if (!amount || Number(amount) < 200000) return showMessage("danger", "Зөвхөн 200,000₮-өөс дээш худалдан авалтын баримт хүлээн авна.");
       if (!imageFile) return showMessage("danger", "Баримтын зураг сонгоно уу.");
 
@@ -640,12 +628,19 @@
       if (!allowedTypes.includes(imageFile.type)) return showMessage("danger", "Зөвхөн JPG, PNG, WEBP зураг оруулна уу.");
       if (imageFile.size > 5 * 1024 * 1024) return showMessage("danger", "Зургийн хэмжээ 5MB-аас ихгүй байх ёстой.");
 
-      isSubmitting = true;
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Илгээж байна...";
-      showMessage("info", "Түр хүлээнэ үү...");
-
       try {
+        isSubmitting = true;
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Илгээж байна...";
+        showMessage("info", "Түр хүлээнэ үү...");
+
+        submitTimeout = setTimeout(() => {
+          if (isSubmitting) {
+            showMessage("danger", "Сервер удаан хариулж байна. Нэг удаа л дахин оролдоно уу.");
+            resetSubmitState();
+          }
+        }, 20000);
+
         const imageBase64 = await fileToBase64(imageFile);
 
         const payload = {
@@ -671,31 +666,31 @@
         });
 
         const rawText = await response.text();
+
         if (!rawText || !rawText.trim()) {
-          throw new Error("Backend хоосон response буцаалаа");
+          throw new Error("Backend хоосон response буцаалаа.");
         }
 
         let data;
         try {
           data = JSON.parse(rawText);
-        } catch (e) {
+        } catch (err) {
           throw new Error("Backend JSON буцаасангүй: " + rawText);
         }
 
         if (data.status === "success") {
-          showMessage("success", "Амжилттай илгээгдлээ.", data.fileUrl || "");
+          showMessage("success", data.message || "Амжилттай илгээгдлээ.", data.fileUrl || "");
           receiptForm.reset();
           fileText.textContent = "Баримтын зураг сонгох";
           showSuccessEffect();
         } else {
           showMessage("danger", `Алдаа: ${data.message || "Тодорхойгүй алдаа"}`);
         }
+
       } catch (error) {
         showMessage("danger", `Алдаа гарлаа: ${error.message}`);
       } finally {
-        isSubmitting = false;
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Илгээх";
+        resetSubmitState();
       }
     });
   </script>
