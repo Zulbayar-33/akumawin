@@ -518,8 +518,18 @@
     </div>
   </div>
 
+  <div id="waitOverlay" class="success-overlay">
+    <div class="success-box">
+      <div class="success-icon">⏳</div>
+      <div class="success-title">Түр хүлээнэ үү</div>
+      <div class="success-text" id="waitText">
+        Та дахин бүртгүүлэхийн тулд 30 минут хүлээнэ үү.
+      </div>
+      <button type="button" class="success-btn" onclick="closeWaitPopup()">Хаах</button>
+    </div>
+  </div>
+
   <script>
-    // YOUR DEPLOYED WEB APP URL
     const scriptURL = "https://script.google.com/macros/s/AKfycby7kz-iRGNjEHnhMmPiVcLgM6lyaPFAjLbSKiCY6SzOmtpjXTE7ePGRlYCnevNvxJIQWQ/exec";
 
     const receiptForm = document.getElementById("receiptForm");
@@ -593,6 +603,15 @@
       document.getElementById("successOverlay").classList.remove("show");
     }
 
+    function showWaitPopup(message) {
+      document.getElementById("waitText").textContent = message;
+      document.getElementById("waitOverlay").classList.add("show");
+    }
+
+    function closeWaitPopup() {
+      document.getElementById("waitOverlay").classList.remove("show");
+    }
+
     function resetSubmitState() {
       isSubmitting = false;
       submitBtn.disabled = false;
@@ -654,8 +673,7 @@
           imageBase64,
           imageName: imageFile.name,
           mimeType: imageFile.type,
-          website,
-          submittedAt: new Date().toISOString()
+          website
         };
 
         const response = await fetch(scriptURL, {
@@ -683,6 +701,9 @@
           receiptForm.reset();
           fileText.textContent = "Баримтын зураг сонгох";
           showSuccessEffect();
+        } else if (data.status === "wait") {
+          showMessage("warning", data.message || "Түр хүлээнэ үү.");
+          showWaitPopup(data.message || "Та дахин бүртгүүлэхийн тулд 30 минут хүлээнэ үү.");
         } else {
           showMessage("danger", `Алдаа: ${data.message || "Тодорхойгүй алдаа"}`);
         }
