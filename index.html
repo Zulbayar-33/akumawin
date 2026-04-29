@@ -648,12 +648,12 @@
       const rawPhone = document.getElementById("phone").value.trim();
       const amount = document.getElementById("amount").value.trim();
       const imageFile = fileInput.files[0];
-      const department = document.getElementById("department").value.trim();
+     
 
       let phone = rawPhone.replace(/\D/g, "");
       if (phone.startsWith("976")) phone = phone.slice(3);
       if (phone.length > 8) phone = phone.slice(-8);
-      if (!department) return showMessage("danger", "Салбар / алба сонгоно уу.");
+     
 
       if (website) return showMessage("danger", "Spam илэрлээ.");
       if (Date.now() - formLoadedAt < 3000) return showMessage("danger", "3 секунд хүлээгээд дахин оролдоно уу.");
@@ -688,7 +688,6 @@
           campaignBrand: "AKUMA",
           name,
           phone,
-          department,
           amount: Number(amount),
           imageBase64,
           imageName: imageFile.name,
