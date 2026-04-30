@@ -657,12 +657,13 @@
       if (phone.length > 8) phone = phone.slice(-8);
      
 
-      if (website) return showMessage("danger", "Spam илэрлээ.");
-      if (Date.now() - formLoadedAt < 3000) return showMessage("danger", "3 секунд хүлээгээд дахин оролдоно уу.");
-      if (!name) return showMessage("danger", "Нэрээ оруулна уу.");
-      if (!/^\d{8}$/.test(phone)) return showMessage("danger", "Утасны дугаар буруу байна.");
-      if (!amount || Number(amount) < 200000) return showMessage("danger", "Зөвхөн 200,000₮-өөс дээш худалдан авалтын баримт хүлээн авна.");
-      if (!imageFile) return showMessage("danger", "Баримтын зураг сонгоно уу.");
+    if (website) return showMessage("danger", "Spam илэрлээ.");
+if (Date.now() - formLoadedAt < 3000) return showMessage("danger", "3 секунд хүлээгээд дахин оролдоно уу.");
+if (!name) return showMessage("danger", "Нэрээ оруулна уу.");
+if (!/^\d{8}$/.test(phone)) return showMessage("danger", "Утасны дугаар буруу байна.");
+if (!department) return showMessage("danger", "Салбар / Алба сонгоно уу.");
+if (!amount || Number(amount) < 200000) return showMessage("danger", "Зөвхөн 200,000₮-өөс дээш худалдан авалтын баримт хүлээн авна.");
+if (!imageFile) return showMessage("danger", "Баримтын зураг сонгоно уу.");
 
       const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
       if (!allowedTypes.includes(imageFile.type)) return showMessage("danger", "Зөвхөн JPG, PNG, WEBP зураг оруулна уу.");
